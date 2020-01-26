@@ -23,9 +23,9 @@ io.on('connection', function (socket) {
         users.delete[socket.client.id];
     });
 });
-
-http.listen(3000, function () {
-    console.log('listening on http://localhost:3000');
+const PORT = process.env.PORT || 8080;
+http.listen(PORT, function () {
+    console.log('listening on http://localhost:' + PORT);
 });
 
 module.exports = app;
