@@ -7,7 +7,7 @@
     * {
       margin: 0;
       padding: 0;
-      box-sizing: border-box;
+      /* box-sizing: border-box; */
     }
 
     body {
@@ -16,19 +16,17 @@
     }
 
     form {
-      /* background: navy; */
       padding: 3px;
       margin: 5px;
-      /* position: fixed; */
       bottom: 0;
-      width: 100%;
+      width: 90vw;
       margin-top: 5px;
     }
 
     form input {
       border: 1px solid black;
       padding: 10px;
-      width: 90%;
+      width: 75vw;
       /* margin-right: .5%; */
     }
 
@@ -41,44 +39,43 @@
     }
 
     #Messages {
-      width: 70%;
-      overflow: auto;
+      width: 70vw;
+      height: 85vh;
       background-color: white;
     }
 
     #Users {
-      width: 15%;
+      width: 15vw;
       background: rgb(130, 224, 255);
-      overflow: auto;
-      margin-right: 5px;
+      margin-right: 1vw;
     }
 
     #Tools {
-      width: 15%;
+      width: 14vw;
       background-color: lightyellow;
-      overflow: auto;
-      margin-right: 5px;
+      margin-right: .5vw;
     }
 
     #Messages,
     #Users,
     #Tools {
-      margin: 5px;
-      /* margin-bottom: 5px ; */
-      padding: 5px;
+      overflow: auto;
+      margin: .5vw;
+      padding: .5vw;
       border: 1px solid black;
     }
 
     #Messages,
-    #Users {
+    #Users, #Tools {
       margin-right: 0px;
+      margin-bottom: 0px;
     }
 
     #messages {
       list-style-type: none;
       margin: 0;
       padding: 0;
-      height: 87vh;
+      height: 85vh;
     }
 
     #users {
@@ -96,10 +93,8 @@
     }
 
     #container {
-      width: 100%;
+      width: 95vw;
       display: flex;
-      /* background-color: white; */
-      /* background-color: yellow; */
     }
 
     #first {
@@ -173,7 +168,7 @@
       Keyboard controls:<br>
       I: Choose icon<br>
     </div>
-  </div id='container'>
+  </div >
   <form action="">
     <input id="m" autocomplete="off"
       placeholder="use the 'Enter' key or 'Send' button to send your message" /><button>Send</button>
