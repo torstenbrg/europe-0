@@ -1,0 +1,183 @@
+<!doctype html>
+<html>
+
+<head>
+  <title>Socket.IO chat</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font: 13px Consolas, Arial;
+      color: navy;
+    }
+
+    form {
+      /* background: navy; */
+      padding: 3px;
+      margin: 5px;
+      /* position: fixed; */
+      bottom: 0;
+      width: 100%;
+      margin-top: 5px;
+    }
+
+    form input {
+      border: 1px solid black;
+      padding: 10px;
+      width: 90%;
+      /* margin-right: .5%; */
+    }
+
+    form button {
+      width: 9%;
+      background: rgb(130, 224, 255);
+      border: 1px solid black;
+      padding: 10px;
+      margin: 5px;
+    }
+
+    #Messages {
+      width: 70%;
+      overflow: auto;
+      background-color: white;
+    }
+
+    #Users {
+      width: 15%;
+      background: rgb(130, 224, 255);
+      overflow: auto;
+      margin-right: 5px;
+    }
+
+    #Tools {
+      width: 15%;
+      background-color: lightyellow;
+      overflow: auto;
+      margin-right: 5px;
+    }
+
+    #Messages,
+    #Users,
+    #Tools {
+      margin: 5px;
+      /* margin-bottom: 5px ; */
+      padding: 5px;
+      border: 1px solid black;
+    }
+
+    #Messages,
+    #Users {
+      margin-right: 0px;
+    }
+
+    #messages {
+      list-style-type: none;
+      margin: 0;
+      padding: 0;
+      height: 87vh;
+    }
+
+    #users {
+      list-style-type: none;
+      margin: 0;
+      padding: 0;
+    }
+
+    #messages li {
+      padding: 2px 2px;
+    }
+
+    #messages li:nth-child(odd) {
+      background: #eee;
+    }
+
+    #container {
+      width: 100%;
+      display: flex;
+      /* background-color: white; */
+      /* background-color: yellow; */
+    }
+
+    #first {
+      display: none;
+    }
+  </style>
+</head>
+<script src="https://unpkg.com/moment"></script>
+<!-- <script src="/moment.js"></script> -->
+<script src="/socket.io/socket.io.js"></script>
+<script src="https://code.jquery.com/jquery-1.11.1.js"></script>
+
+
+<body onload='logIn()'>
+  <script>
+    var socket = io();
+    var first, m, name = '', d = '';
+    function logIn() {
+      do {
+        name = window.prompt('Enter your name or nickname:' + d);
+        if (name == 'null') {name=""}
+        name.trim();
+        d = '\n(at least four characters required)';
+      } while (name.length < 4);
+
+      // name = 'totte';
+      socket.emit('new user', name);
+      m = document.getElementById('m');
+      first = document.getElementById('first');
+      m.innerText = 'test';
+      m.focus();
+    }
+    $(function () {
+      $('form').submit(function (e) {
+        e.preventDefault(); // prevents page reloading
+        socket.emit('chat message', $('#m').val());
+        $('#m').val('');
+        return false;
+      });
+      socket.on('chat message', function (msg) {
+        var tid = moment().format('HH:mm:ss');
+        //$('#messages').append($('<li>').text(tid + ' ' + msg));
+        var li = document.createElement('li');
+        li.innerText = tid + ' ' + msg;
+        //li.insertBefore(first);      does not work for unknown reason
+        first.before(li);
+        first = li;
+      });
+      socket.on('new user', function (user) {
+        var tid = moment().format('HH:mm:ss');
+        var usr = $('<li>').text(user + ' joined ' + tid);
+        $('#users').append(usr);
+      });
+    });
+    socket.on('connect', function () {
+      console.log('form: ' + socket.id)
+    })
+  </script>
+
+
+  <div id='container'>
+    <div id='Users'>
+      <ul id="users"></ul>
+    </div>
+    <div id='Messages'>
+      <ul id="messages">
+        <li id='first'>första</li>
+      </ul>
+    </div>
+    <div id='Tools'>
+      Keyboard controls:<br>
+      I: Choose icon<br>
+    </div>
+  </div id='container'>
+  <form action="">
+    <input id="m" autocomplete="off"
+      placeholder="use the 'Enter' key or 'Send' button to send your message" /><button>Send</button>
+  </form>
+</body>
+
+</html>
