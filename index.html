@@ -2,6 +2,7 @@
 <html>
 
 <head>
+  <meta charset='utf-8'>
   <title>Socket.IO chat</title>
   <base href='\' />
   <!-- <link rel='stylesheet' type="text/css" href="style.css"> -->
@@ -20,7 +21,7 @@
   }
 
   body {
-    font: 13px Consolas, Arial;
+    font: 20px Consolas, Arial;
     color: navy;
   }
 
@@ -33,6 +34,8 @@
   }
 
   form input {
+    font-family: consolas;
+    font-size:20px;
     border: 1px solid black;
     padding: 10px;
     width: 75vw;
@@ -126,8 +129,9 @@
       } while (name.length < 4);
       socket.emit('new user', name);
       first = document.getElementById('first');
-      m = document.getElementById('m');
-      m.focus();
+      document.getElementById('Tools').innerHTML = getEmojis();
+      document.getElementById('m').focus();
+
     }
     $(function () {
       $('form').submit(function (e) {
@@ -176,6 +180,22 @@
       var t = dat.substr(16, 8);
       return t;
     }
+    function getEmojis() {
+      var start = 128511, s = '', del = '';
+      for (i = 1; i < 81; i++) {
+        var d = start + i;
+
+        if (i > 0 && i % 5 == 0) { del = '<br>' }
+        s += '<span onCLick="insertEmoji(this)" style="cursor: pointer">' + '&#x' + d.toString(16) + '</span>' + del;
+        del = '';
+      }
+      return s;
+    }
+    function insertEmoji(e){
+            var s = $('#m').val() + e.innerText;
+            $('#m').val(s);
+            $('#m').focus();
+        }
 
   </script>
 
@@ -191,7 +211,8 @@
     </div>
     <div id='Tools'>
       Keyboard controls:<br>
-      <!-- I: Choose icon<br> -->
+
+
     </div>
   </div>
   <form action="">

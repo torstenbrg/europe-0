@@ -1,0 +1,38 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset='utf-8'>
+    <title>Socket.IO chat</title>
+    <base href='\' />
+    <!-- <link rel='stylesheet' type="text/css" href="./style.css"> -->
+</head>
+
+<body id='body' style='font-family: consolas;font-size: 30px;'>
+    <span onClick='alert("hello")'>Say Hello</span>
+    <div id='emojis'></div>
+    </div>
+    <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
+    <script>
+        function getEmojis() {
+            var start = 128511, s = '', del = '';
+            for (i = 1; i < 81; i++) {
+                var d = start + i;
+
+                if (i > 0 && i % 5 == 0) { del = '<br>' }
+                s += '<span onCLick="insertEmoji(this)" style="cursor: pointer">' + '&#x' + d.toString(16) + '</span>' + del;
+                del = '';
+            }
+            return s;
+        }
+        function insertEmoji(e){
+            var s = e.innerText;
+            alert(s);
+
+        }
+        document.getElementById('emojis').innerHTML = getEmojis();
+    </script>
+
+</body>
+
+</html>
