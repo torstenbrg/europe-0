@@ -35,7 +35,7 @@
 
   form input {
     font-family: consolas;
-    font-size:20px;
+    font-size: 20px;
     border: 1px solid black;
     padding: 10px;
     width: 75vw;
@@ -171,31 +171,28 @@
       })
     });
 
-    var hourOffset = -1;
     function timeString(dat) {
       if (dat === undefined) { return ''; }
-      //var d = new Date(dat);
-      //d.setHours(d.getHours + hourOffset);
-      //var t = d.toISOString().substr(11, 8);
-      var t = dat.substr(16, 8);
+      var d = new Date(dat);
+      var t = d.toString().substr(16, 8);
       return t;
     }
     function getEmojis() {
       var start = 128511, s = '', del = '';
       for (i = 1; i < 81; i++) {
         var d = start + i;
-
-        if (i > 0 && i % 5 == 0) { del = '<br>' }
-        s += '<span onCLick="insertEmoji(this)" style="cursor: pointer">' + '&#x' + d.toString(16) + '</span>' + del;
+        if (i % 6 == 0) { del = '<br>' }
+        s += '<span onCLick="insertEmoji(this)" style="cursor: pointer">' + 
+          '&#x' + d.toString(16) + ';</span>' + del;
         del = '';
       }
       return s;
     }
-    function insertEmoji(e){
-            var s = $('#m').val() + e.innerText;
-            $('#m').val(s);
-            $('#m').focus();
-        }
+    function insertEmoji(e) {
+      var m = $('#m'), s = m.val() + e.innerText;
+      m.val(s);
+      m.focus();
+    }
 
   </script>
 

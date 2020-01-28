@@ -10,6 +10,7 @@ function timeString(dat) {
     return t;
   }
 
-var d = new Date();
+var d = new Date().toISOString();
+console.log(d);
+
 console.log(timeString(d));
-console.log('');
