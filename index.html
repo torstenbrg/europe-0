@@ -66,7 +66,8 @@
     }
 
     #Messages,
-    #Users, #Tools {
+    #Users,
+    #Tools {
       margin-right: 0px;
       margin-bottom: 0px;
     }
@@ -112,19 +113,19 @@
   <script>
     var socket = io();
     var first, m, name = '', d = '';
+    const dat = new Date();
+    var offSet
+
     function logIn() {
       do {
         name = window.prompt('Enter your name or nickname:' + d);
-        if (name == 'null') {name=""}
+        if (name == 'null') { name = "" }
         name.trim();
         d = '\n(at least four characters required)';
       } while (name.length < 4);
-
-      // name = 'totte';
       socket.emit('new user', name);
-      m = document.getElementById('m');
       first = document.getElementById('first');
-      m.innerText = 'test';
+      m = document.getElementById('m');
       m.focus();
     }
     $(function () {
@@ -135,23 +136,45 @@
         return false;
       });
       socket.on('chat message', function (msg) {
-        var tid = moment().format('HH:mm:ss');
-        //$('#messages').append($('<li>').text(tid + ' ' + msg));
+        //var tid = moment().format('HH:mm:ss');
         var li = document.createElement('li');
-        li.innerText = tid + ' ' + msg;
-        //li.insertBefore(first);      does not work for unknown reason
+        //li.innerText = tid + ' ' + msg;
+        li.innerText = timeString(msg.tid) + ' ' + msg.from + ': ' + msg.msg;
         first.before(li);
         first = li;
       });
-      socket.on('new user', function (user) {
-        var tid = moment().format('HH:mm:ss');
-        var usr = $('<li>').text(user + ' joined ' + tid);
-        $('#users').append(usr);
+      socket.on('users', function (users) {
+        $('#users').empty();
+        for (var u of users) {
+          var tid = timeString(u.tid);
+          var usr = $('<li>').text(tid + ' ' + u.name);
+          $('#users').append(usr);
+        }
       });
+      socket.on('history', function (msgs) {
+        for (var i = 0; i < msgs.length; i++) {
+          var li = document.createElement('li');
+          var msg = msgs[i];
+          li.innerText = timeString(msg.tid) + ' ' + msg.from + ': ' + msg.msg;
+          first.before(li);
+          first = li;
+        }
+      });
+      socket.on('connect', function () {
+        console.log('form: ' + socket.id)
+      })
     });
-    socket.on('connect', function () {
-      console.log('form: ' + socket.id)
-    })
+
+    var hourOffset = -1;
+    function timeString(dat) {
+      if (dat === undefined){return '';}
+      //var d = new Date(dat);
+      //d.setHours(d.getHours + hourOffset);
+      //var t = d.toISOString().substr(11, 8);
+      var t = dat.substr(16, 8);
+      return t;
+    }
+
   </script>
 
 
@@ -168,7 +191,7 @@
       Keyboard controls:<br>
       <!-- I: Choose icon<br> -->
     </div>
-  </div >
+  </div>
   <form action="">
     <input id="m" autocomplete="off"
       placeholder="Type here and use the 'Enter' key or 'Send' button to send your message." /><button>Send</button>
