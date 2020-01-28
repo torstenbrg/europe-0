@@ -3,104 +3,8 @@
 
 <head>
   <title>Socket.IO chat</title>
+  <link rel="stylesheet" type="text/css" href="style.css">
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      /* box-sizing: border-box; */
-    }
-
-    body {
-      font: 13px Consolas, Arial;
-      color: navy;
-    }
-
-    form {
-      padding: 3px;
-      margin: 5px;
-      bottom: 0;
-      width: 90vw;
-      margin-top: 5px;
-    }
-
-    form input {
-      border: 1px solid black;
-      padding: 10px;
-      width: 75vw;
-      /* margin-right: .5%; */
-    }
-
-    form button {
-      width: 9%;
-      background: rgb(130, 224, 255);
-      border: 1px solid black;
-      padding: 10px;
-      margin: 5px;
-    }
-
-    #Messages {
-      width: 70vw;
-      height: 85vh;
-      background-color: white;
-    }
-
-    #Users {
-      width: 15vw;
-      background: rgb(130, 224, 255);
-      margin-right: 1vw;
-    }
-
-    #Tools {
-      width: 14vw;
-      background-color: lightyellow;
-      margin-right: .5vw;
-    }
-
-    #Messages,
-    #Users,
-    #Tools {
-      overflow: auto;
-      margin: .5vw;
-      padding: .5vw;
-      border: 1px solid black;
-    }
-
-    #Messages,
-    #Users,
-    #Tools {
-      margin-right: 0px;
-      margin-bottom: 0px;
-    }
-
-    #messages {
-      list-style-type: none;
-      margin: 0;
-      padding: 0;
-      height: 85vh;
-    }
-
-    #users {
-      list-style-type: none;
-      margin: 0;
-      padding: 0;
-    }
-
-    #messages li {
-      padding: 2px 2px;
-    }
-
-    #messages li:nth-child(odd) {
-      background: #eee;
-    }
-
-    #container {
-      width: 95vw;
-      display: flex;
-    }
-
-    #first {
-      display: none;
-    }
   </style>
 </head>
 <script src="https://unpkg.com/moment"></script>
@@ -113,8 +17,6 @@
   <script>
     var socket = io();
     var first, m, name = '', d = '';
-    const dat = new Date();
-    var offSet
 
     function logIn() {
       do {
@@ -139,9 +41,7 @@
         return false;
       });
       socket.on('chat message', function (msg) {
-        //var tid = moment().format('HH:mm:ss');
         var li = document.createElement('li');
-        //li.innerText = tid + ' ' + msg;
         li.innerText = timeString(msg.tid) + ' ' + msg.from + ': ' + msg.msg;
         first.before(li);
         first = li;
