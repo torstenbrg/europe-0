@@ -10,13 +10,13 @@ class user {
     constructor(id, name, icon) {
         this.id = id; // socket id
         this.name = name;
-        this.tid = new Date().toString();
+        this.tid = new Date().toISOString();
         this.icon = icon;
     }
 }
 class message {
     constructor(mess, avs) {
-        this.tid = new Date().toString();
+        this.tid = new Date().toISOString();
         this.msg = mess;
         this.from = avs;
     }
