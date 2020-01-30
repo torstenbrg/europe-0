@@ -43,6 +43,7 @@
       var b = document.getElementById('toggle')
       paused ? b.innerText = a = "Continue": b.innerText = a="Pause" ;
       if (!paused) { setTimeout(sendPhrase(), 1000 + randomint(1000)) }
+      focusM();
     }
 
     function logIn() {
