@@ -3,117 +3,16 @@
 
 <head>
   <meta charset='utf-8'>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Socket.IO chat</title>
   <base href='\' />
-  <!-- <link rel='stylesheet' type="text/css" href="style.css"> -->
-  <style>
-  </style>
+  <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3pro.css">
+  <link rel='stylesheet' href="style.css">
 </head>
 <script src="https://unpkg.com/moment"></script>
 <!-- <script src="/moment.js"></script> -->
 <script src="/socket.io/socket.io.js"></script>
 <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
-<style>
-  * {
-    margin: 0;
-    padding: 0;
-    /* box-sizing: border-box; */
-  }
-
-  body {
-    font: 20px Consolas, Arial;
-    color: navy;
-  }
-
-  form {
-    padding: 3px;
-    margin: 5px;
-    bottom: 0;
-    width: 90vw;
-    margin-top: 5px;
-  }
-
-  form input {
-    font-family: consolas;
-    font-size: 20px;
-    border: 1px solid black;
-    padding: 10px;
-    width: 75vw;
-    /* margin-right: .5%; */
-  }
-
-  form button {
-    width: 9%;
-    background: rgb(130, 224, 255);
-    border: 1px solid black;
-    padding: 10px;
-    margin: 5px;
-  }
-
-  #Messages {
-    width: 70vw;
-    height: 85vh;
-    background-color: white;
-  }
-
-  #Users {
-    width: 15vw;
-    background: rgb(130, 224, 255);
-    margin-right: 1vw;
-  }
-
-  #Tools {
-    width: 14vw;
-    background-color: lightyellow;
-    margin-right: .5vw;
-  }
-
-  #Messages,
-  #Users,
-  #Tools {
-    overflow: auto;
-    margin: .5vw;
-    padding: .5vw;
-    border: 1px solid black;
-  }
-
-  #Messages,
-  #Users,
-  #Tools {
-    margin-right: 0px;
-    margin-bottom: 0px;
-  }
-
-  #messages {
-    list-style-type: none;
-    margin: 0;
-    padding: 0;
-    height: 85vh;
-  }
-
-  #users {
-    list-style-type: none;
-    margin: 0;
-    padding: 0;
-  }
-
-  #messages li {
-    padding: 2px 2px;
-  }
-
-  #messages li:nth-child(odd) {
-    background: #eee;
-  }
-
-  #container {
-    width: 95vw;
-    display: flex;
-  }
-
-  #first {
-    display: none;
-  }
-</style>
 
 <body onload='logIn()'>
   <script>
@@ -129,9 +28,8 @@
       } while (name.length < 4);
       socket.emit('new user', name);
       first = document.getElementById('first');
-      document.getElementById('Tools').innerHTML = getEmojis();
+      document.getElementById('Tools').innerHTML = getEmojis() + '<p /><input type="checkbox" id="myCheck" onclick="focusM()">Silent';
       document.getElementById('m').focus();
-
     }
     $(function () {
       $('form').submit(function (e) {
@@ -144,26 +42,21 @@
         return false;
       });
       socket.on('chat message', function (msg) {
-        var li = document.createElement('li');
-        li.innerText = timeString(msg.tid) + ' ' + msg.from + ': ' + msg.msg;
-        first.before(li);
-        first = li;
+        insertLI(timeString(msg.tid) + ' ' + msg.from + ': ' + msg.msg);
+        beep();
       });
       socket.on('users', function (users) {
         $('#users').empty();
         for (var u of users) {
-          var tid = timeString(u.tid);
-          var usr = $('<li>').text(tid + ' ' + u.name);
+          var s = timeString(u.tid) + ' ' + u.name;
+          var usr = $('<li onCLick="insertUser(this)" style="cursor: pointer">').text(s)[0];
           $('#users').append(usr);
         }
       });
       socket.on('history', function (msgs) {
         for (var i = 0; i < msgs.length; i++) {
-          var li = document.createElement('li');
           var msg = msgs[i];
-          li.innerText = timeString(msg.tid) + ' ' + msg.from + ': ' + msg.msg;
-          first.before(li);
-          first = li;
+          insertLI(timeString(msg.tid) + ' ' + msg.from + ': ' + msg.msg);
         }
       });
       socket.on('connect', function () {
@@ -171,6 +64,11 @@
       })
     });
 
+    function insertLI(s) {
+      var li = $('<li onCLick="insertMessage(this)" style="cursor: pointer">').text(s)[0];
+      first.before(li);
+      first = li;
+    }
     function timeString(dat) {
       if (dat === undefined) { return ''; }
       var d = new Date(dat);
@@ -182,17 +80,29 @@
       for (i = 1; i < 81; i++) {
         var d = start + i;
         if (i % 6 == 0) { del = '<br>' }
-        s += '<span onCLick="insertEmoji(this)" style="cursor: pointer">' + 
+        s += '<span onCLick="insertEmoji(this)" style="cursor: pointer">' +
           '&#x' + d.toString(16) + ';</span>' + del;
         del = '';
       }
       return s;
     }
-    function insertEmoji(e) {
-      var m = $('#m'), s = m.val() + e.innerText;
+    function beep() {
+      var chk = document.getElementById('myCheck');
+      if (chk.checked) { return }
+      //if ($('myCheck').checked) {return}
+      var snd = new Audio("data:audio/wav;base64,//uQRAAAAWMSLwUIYAAsYkXgoQwAEaYLWfkWgAI0wWs/ItAAAGDgYtAgAyN+QWaAAihwMWm4G8QQRDiMcCBcH3Cc+CDv/7xA4Tvh9Rz/y8QADBwMWgQAZG/ILNAARQ4GLTcDeIIIhxGOBAuD7hOfBB3/94gcJ3w+o5/5eIAIAAAVwWgQAVQ2ORaIQwEMAJiDg95G4nQL7mQVWI6GwRcfsZAcsKkJvxgxEjzFUgfHoSQ9Qq7KNwqHwuB13MA4a1q/DmBrHgPcmjiGoh//EwC5nGPEmS4RcfkVKOhJf+WOgoxJclFz3kgn//dBA+ya1GhurNn8zb//9NNutNuhz31f////9vt///z+IdAEAAAK4LQIAKobHItEIYCGAExBwe8jcToF9zIKrEdDYIuP2MgOWFSE34wYiR5iqQPj0JIeoVdlG4VD4XA67mAcNa1fhzA1jwHuTRxDUQ//iYBczjHiTJcIuPyKlHQkv/LHQUYkuSi57yQT//uggfZNajQ3Vmz+Zt//+mm3Wm3Q576v////+32///5/EOgAAADVghQAAAAA//uQZAUAB1WI0PZugAAAAAoQwAAAEk3nRd2qAAAAACiDgAAAAAAABCqEEQRLCgwpBGMlJkIz8jKhGvj4k6jzRnqasNKIeoh5gI7BJaC1A1AoNBjJgbyApVS4IDlZgDU5WUAxEKDNmmALHzZp0Fkz1FMTmGFl1FMEyodIavcCAUHDWrKAIA4aa2oCgILEBupZgHvAhEBcZ6joQBxS76AgccrFlczBvKLC0QI2cBoCFvfTDAo7eoOQInqDPBtvrDEZBNYN5xwNwxQRfw8ZQ5wQVLvO8OYU+mHvFLlDh05Mdg7BT6YrRPpCBznMB2r//xKJjyyOh+cImr2/4doscwD6neZjuZR4AgAABYAAAABy1xcdQtxYBYYZdifkUDgzzXaXn98Z0oi9ILU5mBjFANmRwlVJ3/6jYDAmxaiDG3/6xjQQCCKkRb/6kg/wW+kSJ5//rLobkLSiKmqP/0ikJuDaSaSf/6JiLYLEYnW/+kXg1WRVJL/9EmQ1YZIsv/6Qzwy5qk7/+tEU0nkls3/zIUMPKNX/6yZLf+kFgAfgGyLFAUwY//uQZAUABcd5UiNPVXAAAApAAAAAE0VZQKw9ISAAACgAAAAAVQIygIElVrFkBS+Jhi+EAuu+lKAkYUEIsmEAEoMeDmCETMvfSHTGkF5RWH7kz/ESHWPAq/kcCRhqBtMdokPdM7vil7RG98A2sc7zO6ZvTdM7pmOUAZTnJW+NXxqmd41dqJ6mLTXxrPpnV8avaIf5SvL7pndPvPpndJR9Kuu8fePvuiuhorgWjp7Mf/PRjxcFCPDkW31srioCExivv9lcwKEaHsf/7ow2Fl1T/9RkXgEhYElAoCLFtMArxwivDJJ+bR1HTKJdlEoTELCIqgEwVGSQ+hIm0NbK8WXcTEI0UPoa2NbG4y2K00JEWbZavJXkYaqo9CRHS55FcZTjKEk3NKoCYUnSQ0rWxrZbFKbKIhOKPZe1cJKzZSaQrIyULHDZmV5K4xySsDRKWOruanGtjLJXFEmwaIbDLX0hIPBUQPVFVkQkDoUNfSoDgQGKPekoxeGzA4DUvnn4bxzcZrtJyipKfPNy5w+9lnXwgqsiyHNeSVpemw4bWb9psYeq//uQZBoABQt4yMVxYAIAAAkQoAAAHvYpL5m6AAgAACXDAAAAD59jblTirQe9upFsmZbpMudy7Lz1X1DYsxOOSWpfPqNX2WqktK0DMvuGwlbNj44TleLPQ+Gsfb+GOWOKJoIrWb3cIMeeON6lz2umTqMXV8Mj30yWPpjoSa9ujK8SyeJP5y5mOW1D6hvLepeveEAEDo0mgCRClOEgANv3B9a6fikgUSu/DmAMATrGx7nng5p5iimPNZsfQLYB2sDLIkzRKZOHGAaUyDcpFBSLG9MCQALgAIgQs2YunOszLSAyQYPVC2YdGGeHD2dTdJk1pAHGAWDjnkcLKFymS3RQZTInzySoBwMG0QueC3gMsCEYxUqlrcxK6k1LQQcsmyYeQPdC2YfuGPASCBkcVMQQqpVJshui1tkXQJQV0OXGAZMXSOEEBRirXbVRQW7ugq7IM7rPWSZyDlM3IuNEkxzCOJ0ny2ThNkyRai1b6ev//3dzNGzNb//4uAvHT5sURcZCFcuKLhOFs8mLAAEAt4UWAAIABAAAAAB4qbHo0tIjVkUU//uQZAwABfSFz3ZqQAAAAAngwAAAE1HjMp2qAAAAACZDgAAAD5UkTE1UgZEUExqYynN1qZvqIOREEFmBcJQkwdxiFtw0qEOkGYfRDifBui9MQg4QAHAqWtAWHoCxu1Yf4VfWLPIM2mHDFsbQEVGwyqQoQcwnfHeIkNt9YnkiaS1oizycqJrx4KOQjahZxWbcZgztj2c49nKmkId44S71j0c8eV9yDK6uPRzx5X18eDvjvQ6yKo9ZSS6l//8elePK/Lf//IInrOF/FvDoADYAGBMGb7FtErm5MXMlmPAJQVgWta7Zx2go+8xJ0UiCb8LHHdftWyLJE0QIAIsI+UbXu67dZMjmgDGCGl1H+vpF4NSDckSIkk7Vd+sxEhBQMRU8j/12UIRhzSaUdQ+rQU5kGeFxm+hb1oh6pWWmv3uvmReDl0UnvtapVaIzo1jZbf/pD6ElLqSX+rUmOQNpJFa/r+sa4e/pBlAABoAAAAA3CUgShLdGIxsY7AUABPRrgCABdDuQ5GC7DqPQCgbbJUAoRSUj+NIEig0YfyWUho1VBBBA//uQZB4ABZx5zfMakeAAAAmwAAAAF5F3P0w9GtAAACfAAAAAwLhMDmAYWMgVEG1U0FIGCBgXBXAtfMH10000EEEEEECUBYln03TTTdNBDZopopYvrTTdNa325mImNg3TTPV9q3pmY0xoO6bv3r00y+IDGid/9aaaZTGMuj9mpu9Mpio1dXrr5HERTZSmqU36A3CumzN/9Robv/Xx4v9ijkSRSNLQhAWumap82WRSBUqXStV/YcS+XVLnSS+WLDroqArFkMEsAS+eWmrUzrO0oEmE40RlMZ5+ODIkAyKAGUwZ3mVKmcamcJnMW26MRPgUw6j+LkhyHGVGYjSUUKNpuJUQoOIAyDvEyG8S5yfK6dhZc0Tx1KI/gviKL6qvvFs1+bWtaz58uUNnryq6kt5RzOCkPWlVqVX2a/EEBUdU1KrXLf40GoiiFXK///qpoiDXrOgqDR38JB0bw7SoL+ZB9o1RCkQjQ2CBYZKd/+VJxZRRZlqSkKiws0WFxUyCwsKiMy7hUVFhIaCrNQsKkTIsLivwKKigsj8XYlwt/WKi2N4d//uQRCSAAjURNIHpMZBGYiaQPSYyAAABLAAAAAAAACWAAAAApUF/Mg+0aohSIRobBAsMlO//Kk4soosy1JSFRYWaLC4qZBYWFRGZdwqKiwkNBVmoWFSJkWFxX4FFRQWR+LsS4W/rFRb/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////VEFHAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAU291bmRib3kuZGUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAMjAwNGh0dHA6Ly93d3cuc291bmRib3kuZGUAAAAAAAAAACU=");
+      snd.play();
+    }
+    function insertEmoji(e) { updateM(e.innerText) }
+    function insertUser(e) { updateM('@' + e.innerText.substr(9).trim() + ':') }
+    function insertMessage(e) { updateM("[" + e.innerText + "]"); }
+    function updateM(add) {
+      var m = $('#m'), s = m.val() + add;
       m.val(s);
       m.focus();
     }
+    function focusM() { $('#m').focus() }
+
 
   </script>
 
@@ -208,14 +118,15 @@
     </div>
     <div id='Tools'>
       Keyboard controls:<br>
-
-
     </div>
+
   </div>
   <form action="">
     <input id="m" autocomplete="off"
       placeholder="Type here and use the 'Enter' key or 'Send' button to send your message." /><button>Send</button>
   </form>
+
+
 </body>
 
 </html>

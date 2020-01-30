@@ -1,10 +1,13 @@
 
 
 require('@google-cloud/debug-agent').start();
+var express = require('express');
 var app = require('express')();
 var http = require('http').createServer(app);
 var io = require('socket.io')(http);
 var msgs = new Array, users = new Array();
+
+app.use(express.static(__dirname)); 
 
 class user {
     constructor(id, name, icon) {
@@ -72,7 +75,7 @@ io.on('connection', function (socket) {
             }
             catch (e) {
                 console.log(e)
-                var mess = new message('problem with user disconnecting ' + e.toString(), 'server europe-0')
+                var mess = new message('problem with user ' + su + ' disconnecting ' + e.toString(), 'server europe-0')
                 io.emit('chat message', );
             }
         } else {
