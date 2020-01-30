@@ -16,6 +16,7 @@ class user {
         this.name = name;
         this.tid = new Date().toISOString();
         this.icon = icon;
+        this.gotPhrases = false;
     }
 }
 class message {
@@ -41,7 +42,7 @@ app.get('/', function (req, res) {
 });
 
 readPhrases();
-function readPhrases() {
+function readPhrases() { // only done once
     var text = fs.readFile('phrases.txt', function (err, buffer) {
         var data = buffer.toString("utf8", 0, buffer.length);
         data.replace(/[\r\n]+/gm, "")
@@ -66,9 +67,7 @@ io.on('connection', function (socket) {
         mess = new message('Welcome to this chat ' + msg + '. ' + us, 'server europe-0');
         socket.emit('history', msgs); // only to sender
         socket.emit('chat message', mess); // only to sender
-        if (users.length > 1) {
-            io.emit('phrases', phrases);
-        }
+        socket.emit('phrases', phrases) // only to sender
     });
     socket.on('chat message', function (msg) {
         var id = socket.client.id, u = getUser(id);
@@ -86,6 +85,7 @@ io.on('connection', function (socket) {
         if (u != undefined) {
             var su = u.name;
             try {
+                console.log( ' user left', id, su);
                 var mess = new message(su + ' left this chat', 'server europe-0')
                 io.emit('chat message', mess);
                 users = removeUser(id);
@@ -97,7 +97,7 @@ io.on('connection', function (socket) {
                 io.emit('chat message');
             }
         } else {
-            console.log('unrecognized id = ', id)
+            console.log('unrecognized id when disconnecting = ', id)
         }
     });
 });
