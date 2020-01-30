@@ -19,25 +19,31 @@
     var socket = io();
     var first, m, name = '', d = '';
     var emojis = new Array, users = new Array, phrases = new Array;
-    var latest = new Date()
+    var latest = new Date(), paused = false;
 
     function sendPhrase() {
       var now = new Date();
-      if (users.length == 1){return}
+      if (paused) { return }
+      if (users.length == 1) { return }
       if (now - latest > 10000) {
         var r = randomInt(phrases.length);
         var e = emojis[randomInt(emojis.length)];
         socket.emit('chat message', phrases[r] + e + '<br>');
         latest = now
       } else {
-        setTimeout(sendPhrase, 1000+randomInt(10000));
+        setTimeout(sendPhrase(), 1000 + randomInt(10000));
       }
     }
 
     function randomInt(max) {
       return Math.floor(Math.random() * max);
     }
-
+    function togglePause() {
+      paused = !paused;
+      var b = document.getElementById('toggle')
+      paused ? b.innerText = a = "Continue": b.innerText = a="Pause" ;
+      if (!paused) { setTimeout(sendPhrase(), 1000 + randomint(1000)) }
+    }
 
     function logIn() {
       do {
@@ -48,7 +54,9 @@
       } while (name.length < 4);
       socket.emit('new user', name);
       first = document.getElementById('first');
-      document.getElementById('Tools').innerHTML = getEmojis() + '<p /><input type="checkbox" id="myCheck" onclick="focusM()">Silent';
+      document.getElementById('Tools').innerHTML = getEmojis() +
+        '<p /><input type="checkbox" id="myCheck" onclick="focusM()">Silent' +
+        '<p /><button id="toggle" onClick="togglePause()">Pause</button>';
       document.getElementById('m').focus();
     }
     $(function () {
