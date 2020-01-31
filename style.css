@@ -5,33 +5,32 @@
 }
 
 body {
-  font: 20px Consolas, Arial;
+  font: 1vw Consolas, Arial;
   color: navy;
 }
 
 form {
-  padding: 3px;
-  margin: 5px;
+  padding: .5vw;
+  margin: .8vw;
   bottom: 0;
   width: 90vw;
-  margin-top: 5px;
+  margin-top: .8vw;
 }
 
 form input {
   font-family: consolas;
-  font-size: 20px;
+  font-size: 1vw;
   border: 1px solid black;
-  padding: 10px;
+  padding: .5vw;
   width: 75vw;
-  /* margin-right: .5%; */
 }
 
 form button {
   width: 9%;
   background: rgb(130, 224, 255);
-  border: 1px solid black;
-  padding: 10px;
-  margin: 5px;
+  border: .1vw solid black;
+  padding: .5vw;
+  margin: .3vw;
 }
 
 #Messages {
@@ -64,8 +63,8 @@ form button {
 #Messages,
 #Users,
 #Tools {
-  margin-right: 0px;
-  margin-bottom: 0px;
+  margin-right: 0vw;
+  margin-bottom: 0vw;
 }
 
 #messages {
@@ -82,7 +81,7 @@ form button {
 }
 
 #messages li {
-  padding: 2px 2px;
+  padding: .1vw .1vw;
 }
 
 #messages li:nth-child(odd) {
@@ -96,4 +95,8 @@ form button {
 
 #first {
   display: none;
+}
+
+#count {
+    margin-left: 1vw;
 }

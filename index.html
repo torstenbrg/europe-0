@@ -17,23 +17,23 @@
 <body onload='logIn()'>
     <script>
         var socket = io();
-        var first, m, name = '', d = '';
+        var first, m, name = '', d = '', kk = 0;
         var emojis = new Array, users = new Array, phrases = new Array;
         var latest = new Date(), paused = false;
 
+        
         function sendPhrase() {
             if (paused) { return }
             var r = randomInt(phrases.length);
             var e = emojis[randomInt(emojis.length)];
             socket.emit('chat message', phrases[r] + e + '<br>');
+            var lis = document.getElementsByName('li')
         }
-        function getInterval() {
-            var t = 2000 + randomInt(5000) ^ users.length;
-            return t;
-        }
-        function randomInt(max) {
-            return Math.floor(Math.random() * max);
-        }
+
+        function count() { document.getElementById('count').innerText = kk; }
+        function getInterval() { return Math.pow(users.length, 2) * (2000 + randomInt(5000)); }
+        function randomInt(max) { return Math.floor(Math.random() * max); }
+        
         function togglePause() {
             paused = !paused;
             var b = document.getElementById('toggle')
@@ -53,6 +53,7 @@
             first = document.getElementById('first');
             document.getElementById('Tools').innerHTML = getEmojis() +
                 '<p /><input type="checkbox" id="myCheck" onclick="focusM()" checked>Silent' +
+                '<span id="count" >0</span>' +
                 '<p /><button id="toggle" onClick="togglePause()">Pause</button>';
             document.getElementById('m').focus();
         }
@@ -71,6 +72,7 @@
                 insertLI(timeString(msg.tid) + ' ' + msg.from + ': ' + msg.msg);
                 beep();
                 setTimeout(sendPhrase, getInterval());
+                count();
             });
             socket.on('users', function (msgs) {
                 users = new Array;
@@ -83,10 +85,11 @@
                 }
             });
             socket.on('history', function (msgs) {
-                if (msgs.length ==0) {return}
+                if (msgs.length == 0) { return }
                 for (var i = 0; i < 100; i++) {
                     var msg = msgs[i];
                     insertLI(timeString(msg.tid) + ' ' + msg.from + ': ' + msg.msg);
+                    count();
                 }
             });
             socket.on('phrases', function (msgs) {
@@ -101,6 +104,7 @@
             var li = $('<li onCLick="insertMessage(this)" style="cursor: pointer">').html(s)[0];
             first.before(li);
             first = li;
+            kk++;
         }
         function timeString(dat) {
             if (dat === undefined) { return ''; }
